@@ -1,0 +1,88 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+    dependencies {
+        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.4"
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.5.RELEASE"
+    }
+}
+
+version "0.1"
+group "clubs"
+
+apply plugin:"io.spring.dependency-management"
+apply plugin:"com.github.johnrengelman.shadow"
+apply plugin:"application"
+apply plugin:"groovy"
+
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "https://jcenter.bintray.com" }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom 'io.micronaut:micronaut-bom:1.0.2'
+    }
+}
+
+
+ext {
+//tag::extGorm[]
+    gormVersion = '6.1.9.RELEASE'
+    h2Version = '1.4.196'
+    tomcatJdbcVersion = '8.5.28'
+//end::extGorm[]
+//tag::extSpringSecurityCrypto[]
+    springSecurityCryptoVersion='4.2.5.RELEASE'
+//end::extSpringSecurityCrypto[]
+}
+
+dependencies {
+    compile "io.micronaut:micronaut-runtime-groovy"
+    compile "io.micronaut:micronaut-validation"
+    compile "javax.annotation:javax.annotation-api"
+    compile "io.micronaut:micronaut-http-client"
+    compile "io.micronaut:micronaut-http-server-netty"
+
+//tag::dep[]
+    //compile "io.micronaut:discovery-client"
+//end::dep[]
+// https://mvnrepository.com/artifact/io.micronaut/discovery-client
+compile group: 'io.micronaut', name: 'discovery-client', version: '1.0.0.RC2'
+
+
+    compileOnly "io.micronaut:micronaut-inject-groovy"
+    runtime "ch.qos.logback:logback-classic:1.2.3"
+    runtime "com.h2database:h2:1.4.196"
+    runtime "org.apache.tomcat:tomcat-jdbc:8.0.44"
+	
+	compile "io.micronaut.configuration:micronaut-hibernate-validator"
+    compile "io.micronaut.configuration:micronaut-hibernate-gorm"
+    compile "org.grails:grails-datastore-gorm-hibernate5:$gormVersion"
+    runtime "com.h2database:h2:$h2Version"
+    runtime "org.apache.tomcat:tomcat-jdbc:$tomcatJdbcVersion"
+
+    testCompile "io.micronaut:inject-groovy"
+    testCompile("org.spockframework:spock-core:1.1-groovy-2.4") {
+        exclude group: "org.codehaus.groovy", module: "groovy-all"
+    }
+}
+
+shadowJar {
+    mergeServiceFiles()
+}
+
+run.jvmArgs('-noverify', '-XX:TieredStopAtLevel=1')
+
+mainClassName = "clubs.Application"
+
+test {
+    testLogging {
+        showStandardStreams = true
+    }
+}
