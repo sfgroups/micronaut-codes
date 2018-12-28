@@ -18,11 +18,13 @@ dataSource:
   driverClassName: org.h2.Driver
   username: sa
   password: ''
-#tag::consul[]
 ---
 consul:
   client:
     registration:
       enabled: true
-  defaultZone: "${CONSUL_HOST:localhost}:${CONSUL_PORT:8500}"
-#end::consul[]
+      fail-fast: false
+      retry-count: 10
+      retry-delay: 5s
+    defaultZone:  "${CONSUL_HOST:192.168.16.15}:${CONSUL_PORT:8500}"
+
