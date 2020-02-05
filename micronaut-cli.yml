@@ -1,0 +1,5 @@
+profile: service
+defaultPackage: webapp
+---
+testFramework: spock
+sourceLanguage: groovy
