@@ -2,6 +2,7 @@ plugins {
     id "groovy"
     id "com.github.johnrengelman.shadow" version "5.2.0"
     id "application"
+    id "com.google.cloud.tools.jib" version "2.0.0"
 }
 
 version "0.1"
@@ -36,6 +37,9 @@ dependencies {
 
     runtimeOnly "com.h2database:h2"
 
+    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
+    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.19'
+
     testCompileOnly platform("io.micronaut:micronaut-bom:$micronautVersion")
     testImplementation platform("io.micronaut:micronaut-bom:$micronautVersion")
     testImplementation("org.spockframework:spock-core") {
@@ -45,6 +49,7 @@ dependencies {
     testImplementation "io.micronaut.test:micronaut-test-spock"
     testImplementation "io.micronaut.test:micronaut-test-junit5"
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:5.5.0"
+
 }
 
 test.classpath += configurations.developmentOnly
@@ -60,4 +65,47 @@ shadowJar {
 
 run.classpath += configurations.developmentOnly
 run.jvmArgs('-noverify', '-XX:TieredStopAtLevel=1', '-Dcom.sun.management.jmxremote')
+run.jvmArgs('-noverify', '-XX:TieredStopAtLevel=1')
 
+run {
+    // environment('micronaut.environments','dev')
+    //environment 'micronaut.config.files', 'C:\\shared\\application.dev.properties'
+
+    systemProperty('micronaut.environments','dev')
+    systemProperty('micronaut.config.files', 'C:\\shared\\application.dev.properties')
+
+
+
+    System.setProperty("JDBC_URL", "value");
+    System.setProperty("log_dir", "/tmp/log");
+    println 'USERPROFILE ' +System.env.USERPROFILE
+    println System.env.OS
+    println System.env.JDBC_URL
+    println System.env.'micronaut.config.files'
+
+}
+
+jib {
+    from {
+        image = 'openjdk:8-jdk-alpine'
+    }
+
+    to {
+        image = 'registry.hub.docker.com/sfgroups/webapp'
+        //  tags = ['tag2', 'latest']
+        /*  auth {
+               username = dockerUsername
+               password = dockerPassword
+           }*/
+    }
+    container {
+        jvmFlags = ['-Djava.security.egd=file:/dev/./urandom', '-Duser.timezone=GMT+05', '-Xdebug','-Xms512m', '-Xmx512m']
+        args = ['some args']
+        ports = ['8880']
+        labels = [key1: 'value1', key2: 'value2']
+        user= "1000:1000"
+        format = 'OCI'
+
+    }
+    allowInsecureRegistries = true
+}

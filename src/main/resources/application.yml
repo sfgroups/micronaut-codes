@@ -1,6 +1,10 @@
 micronaut:
   application:
     name: webapp
+  server:
+    port: 8880
+    cors:
+      enabled: true
   router:
     static-resources:
       swagger:
@@ -32,3 +36,8 @@ dataSource:
   driverClassName: org.h2.Driver
   username: sa
   password: ''
+---
+aws:
+  keyid: "2weadasdwda"
+  secretkeyid: "abcdesdasdsddddd"
+  region: "us-east-1"

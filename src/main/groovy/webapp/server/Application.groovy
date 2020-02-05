@@ -2,11 +2,8 @@ package webapp
 
 import io.micronaut.runtime.Micronaut
 import groovy.transform.CompileStatic
-import io.micronaut.runtime.Micronaut
-import groovy.transform.CompileStatic
-import io.swagger.v3.oas.annotations.*
-import io.swagger.v3.oas.annotations.info.*
-
+import io.swagger.v3.oas.annotations.*;
+import io.swagger.v3.oas.annotations.info.*;
 
 @OpenAPIDefinition(
         info = @Info(
@@ -20,16 +17,17 @@ import io.swagger.v3.oas.annotations.info.*
 
 @CompileStatic
 class Application {
-    // System.getenv().sort().each { property, value -> println "$property = $value"}
-    String filename=System.properties['micronaut.config.files']
-    File f= new File(filename)
-    if( f.exists()){
-        println "File found: $filename"
-        println f.text
-    } else{
-        println "file not found : $filename"
-    }
-    static void main( args) {
+    static void main(String[] args) {
+       // System.getenv().sort().each { property, value -> println "$property = $value"}
+        String filename=System.properties['micronaut.config.files']
+        File f= new File(filename)
+        if( f.exists()){
+            println "File found: $filename"
+            println f.text
+        } else{
+            println "file not found : $filename"
+        }
         Micronaut.run(Application)
+
     }
 }
